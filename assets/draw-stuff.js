@@ -39,7 +39,39 @@ function draw_board( rctx, sSize, rstroke, rfill1, rfill2  )
 	}
 }
 
-function asignNumbers()
+/*
+creats a 10x10 3d array with each random numbers between (0 and 30).
+*/
+
+function createBoardArray()
 {
-	
+	var boardArray = new Array();
+	for (var i = 0; i < 10; ++i)
+	{
+		boardArray[i] = new Array();
+		for (var j = 0; j < 10; ++j)
+		{
+			boardArray[i][j] = new Array();
+			boardArray[i][j][1] = 1; // impliment random number generator
+			boardArray[i][j][2] = 1;
+		}
+	}
+	//prints array out to console.
+	/*
+	for (var i = 0; i < 10; ++i)
+	{
+		for (var j = 0; j < 10; ++j)
+		{
+			console.log(boardArray[i][j][2]);
+			console.log(boardArray[i][j][1]);
+		}
+	}
+	*/
+	return boardArray;
+}
+
+
+
+function DFS(board_arr, current_pos, sink_pos) {
+	return tree;
 }

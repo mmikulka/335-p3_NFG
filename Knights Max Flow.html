@@ -26,7 +26,7 @@ Description: This file holds the main body of the program. It calls all the func
   // =====================================================  draw_title ====
   // Draw filled rect.
   function draw_title( context ) 
-  {
+	 {
       context.save( );
       context.fillStyle = 'purple';
       context.font = "30px Arial";
@@ -35,6 +35,7 @@ Description: This file holds the main body of the program. It calls all the func
   // =====================================================  Main ====
     var canvas = document.getElementById( "grid" );
     var context = canvas.getContext( "2d" );
+	createBoardArray();
 
     // draws the rectange outside
     // params: context, border color, middle fill color
