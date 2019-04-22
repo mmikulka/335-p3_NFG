@@ -98,6 +98,16 @@ function drawNode(ctx, x, y)
   ctx.restore();
 }
 
+function connectNodes(ctx, x1, y1, x2, y2)
+{
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(y1 * 150 + 125, x1 * 150 + 125);
+  ctx.lineTo(y2 * 150 + 125, x2 * 150 + 125);
+  ctx.stroke();
+  ctx.restore();
+}
+
 function DFS(board_arr, path_ammount, current_y, current_x, sink_y, sink_x) {
 	if ( current_x == sink_x && current_y == sink_y) return 0;
 	var paths = new Array();
