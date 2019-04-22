@@ -17,6 +17,11 @@ Description: This file holds the main body of the program. It calls all the func
   <body>
     <h1>NFG</h1>
 
+    <div id="navbar">
+      <div id="currentFlow"></div>
+      <div id="unusedEdges"></div>
+    <div>
+
     <canvas id="grid" width="1550" height="1550"></canvas>
 
   </body>
@@ -40,6 +45,9 @@ Description: This file holds the main body of the program. It calls all the func
 
     draw_board( context, 150, 5, 'white', 'grey', board);
 
+    // this can be moved when the algorithm finishes
+    document.getElementById('currentFlow').innerHTML = "The current flow is: " + 1234;
+    document.getElementById('unusedEdges').innerHTML = "The number of unused edges is: " + 1234;
 
   </script>
 </html>

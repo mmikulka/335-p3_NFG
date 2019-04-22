@@ -94,8 +94,3 @@ function DFS(board_arr, path_ammount, current_y, current_x, sink_y, sink_x) {
 	var tempY = current_y -2;
 
 }
-
-function drawCellCap()
-{
-
-}
