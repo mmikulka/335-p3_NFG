@@ -87,6 +87,17 @@ function createBoardArray()
 	return boardArray;
 }
 
+function drawNode(ctx, x, y)
+{
+  ctx.save();
+  ctx.beginPath();
+  ctx.fillStyle = "green";
+  ctx.arc(y * 150 + 125, x * 150 + 125, 30, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.fill();
+  ctx.restore();
+}
+
 function DFS(board_arr, path_ammount, current_y, current_x, sink_y, sink_x) {
 	if ( current_x == sink_x && current_y == sink_y) return 0;
 	var paths = new Array();
