@@ -54,9 +54,33 @@ Description: This file holds the main body of the program. It calls all the func
     drawNode(context, 0, 0);
     drawNode(context, 1, 2);
 
-    // for testing
     // params: context, x1 index, y1 index, x2 index, y2 index
-    connectNodes(context, 0, 0, 1, 2);
+    connectNodes(context, 0, 0, 1, 2, board);
+
+    drawNode(context, 5, 6);
+    drawNode(context, 7, 7);
+    connectNodes(context, 5, 6, 7, 7, board);
+
+    drawNode(context, 7, 5);
+    connectNodes(context, 5, 6, 7, 5, board);
+
+    drawNode(context, 6, 4);
+    connectNodes(context, 5, 6, 6, 4, board);
+
+    drawNode(context, 4, 4);
+    connectNodes(context, 5, 6, 4, 4, board);
+
+    drawNode(context, 3, 5);
+    connectNodes(context, 5, 6, 3, 5, board);
+
+    drawNode(context, 3, 7);
+    connectNodes(context, 5, 6, 3, 7, board);
+
+    drawNode(context, 4, 8);
+    connectNodes(context, 5, 6, 4, 8, board);
+
+    drawNode(context, 6, 8);
+    connectNodes(context, 5, 6, 6, 8, board);
 
   </script>
 </html>

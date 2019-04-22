@@ -87,6 +87,7 @@ function createBoardArray()
 	return boardArray;
 }
 
+// draws a nodes in the given index of the grid
 function drawNode(ctx, x, y)
 {
   ctx.save();
@@ -98,13 +99,23 @@ function drawNode(ctx, x, y)
   ctx.restore();
 }
 
-function connectNodes(ctx, x1, y1, x2, y2)
+// connects 2 nodes together based on their indexes in the grid
+function connectNodes(ctx, x1, y1, x2, y2, boardNumbers)
 {
   ctx.save();
   ctx.beginPath();
   ctx.moveTo(y1 * 150 + 125, x1 * 150 + 125);
   ctx.lineTo(y2 * 150 + 125, x2 * 150 + 125);
   ctx.stroke();
+
+  // draws the value of the cap based on the cells on the board
+  ctx.font = "20px Arial";
+  ctx.fillStyle = "red";
+  flowCap = "(" + 0 + ", " + (boardNumbers[x1][y1][0] + boardNumbers[x2][y2][0])/2 + ")";
+  xcord = ((x1 + x2) / 2) * 150 + 125;
+  ycord = ((y1 + y2) / 2) * 150 + 125;
+  ctx.fillText(flowCap, ycord, xcord);
+
   ctx.restore();
 }
 
