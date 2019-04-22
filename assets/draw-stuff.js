@@ -4,7 +4,6 @@ Contact: jtishii@csu.fullerton.edu, mattmikulka@csu.fullerton.edu
 Description: This program illustrates Wolfram's Rule-90 is based on a 1D array where each cell is active.
             We will illustate on a webpage visually how this works. This file holds all the functions to be called by the Cela Rule 90.html file
 */
-
 // Draw filled rect.
 function draw_rect( ctx, sSize, fill, x, y) 
 {
@@ -22,7 +21,7 @@ function draw_rect( ctx, sSize, fill, x, y)
 
 // =====================================================  draw_grid ====
 // draw starting grid
-function draw_board( rctx, sSize, rstroke, rfill1, rfill2  ) 
+function draw_board( rctx, sSize, rstroke, rfill1, rfill2, boardNumbers) 
 {
     rctx.save( );
     rctx.strokeStyle = "black";
@@ -40,7 +39,7 @@ function draw_board( rctx, sSize, rstroke, rfill1, rfill2  )
 }
 
 /*
-creats a 10x10 3d array with each random numbers between (0 and 30).
+creats a 10x10 3d array with each cell a random even number between (0 and 30).
 */
 
 function createBoardArray()
@@ -52,26 +51,27 @@ function createBoardArray()
 		for (var j = 0; j < 10; ++j)
 		{
 			boardArray[i][j] = new Array();
-			boardArray[i][j][1] = 1; // impliment random number generator
-			boardArray[i][j][2] = 1;
+			boardArray[i][j][0] = Math.floor((Math.random() * 16)) * 2; // assigns a random even number between 0 and 30 to each cell
+			boardArray[i][j][1] = 0; // indicator to see if spot was accessed before.
 		}
 	}
-	//prints array out to console.
-	/*
+	//print array numbers to console
+	/* 
 	for (var i = 0; i < 10; ++i)
 	{
 		for (var j = 0; j < 10; ++j)
 		{
-			console.log(boardArray[i][j][2]);
-			console.log(boardArray[i][j][1]);
+			console.log(boardArray[i][j]);
 		}
 	}
 	*/
 	return boardArray;
 }
 
-
-
-function DFS(board_arr, current_pos, sink_pos) {
-	return tree;
+function DFS(board_arr, path_ammount, current_y, current_x, sink_y, sink_x) {
+	if ( current_x == sink_x && current_y == sink_y) return 0;
+	var paths = new Array();
+	var tempX = current_x -1;
+	var tempY = current_y -2;
+	
 }
