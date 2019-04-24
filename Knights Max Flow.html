@@ -44,6 +44,13 @@ Description: This file holds the main body of the program. It calls all the func
 	  var board = createBoardArray();
 
     draw_board( context, 150, 5, 'white', 'grey', board);
+	
+	var visited = new Array();
+	for (var i = 0; i < 10; ++i)
+	{
+		visited[i] = new Array(10).fill(0);
+	}
+	DFS(board, 1, 2, visited)
 
     // this can be moved when the algorithm finishes
     document.getElementById('currentFlow').innerHTML = "The current flow is: " + 1234;

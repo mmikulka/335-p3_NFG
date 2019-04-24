@@ -8,17 +8,9 @@ Description: This program illustrates Knight Max Flow problem and solves it as b
 
 max_edges = Math.floor((Math.random() * 16)) + 15;
 
-var SOURCE =
-{
-  yindex: 1,
-  xindex: 2
-};
+var flowCapacity = 0;
 
-var SINK =
-{
-  yindex: 8,
-  xindex: 7
-};
+edges = 0;
 
 function draw_rect( ctx, sSize, fill, x, y)
 {
@@ -146,41 +138,163 @@ function DFS(boardArr, xindex, yindex, visited)
   // checks to see if the next search is out of bounds
   if(xindex < 0 || yindex < 0 || xindex > 9 || yindex > 9)
   {
-    return 0;
+    return false;
   }
 
   // checks to see if the amount of edges is all used up
-  if(boardArr[xindex][yindex][2] == max_edges)
+  if(edges == max_edges)
   {
-    return 0;
+    return false;
   }
 
-  if(isVisited(xindex, yindex, visited))
+  /*if(isVisited(xindex, yindex, visited))
   {
     return 0;
+  }*/
+  
+  if (isSink(xindex, yindex)) 
+  {
+	  return true;
   }
-
+  
   // this is going to be where we check for the highest next nodes
   // if any of the nodes is the sink go directly to it
+  console.log(visited);
+  console.log(xindex);
+  console.log(yindex);
+  
+  visited[xindex][yindex] = 1;
+  edges += 1;
+  var temp = flowCapacity; // temperary variable to hold the flow up to the current node
+  alreadyChecked = new Array(8).fill(0);
+  do{
+	  flowCapacity = temp;
+	  nextMove = findNextEdge(boardArr, xindex, yindex, visited, alreadyChecked);
+	  alreadyChecked.push(nextMove);
+	  currentFlow = findFlow();
+	  flowCapacity = Math.min(currentFlow, flowCapacity);
+	  found = DFS (boardArr, nextMove[0], nextMove[1], visited)
+  }
+  while (!found && Math.min(...alreadyChecked) == 0)
+	  if (!found)
+  		{
+  			visited[xindex][yindex] = 0;
+			edges -= 1;
+ 	 	}
+  return found;
+}
 
+function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
+{
+	var maxValue = 0;
+	var newX;
+	var newY;
+	var newIndex;
 
+	//moves are done clockwise from 12 o'clock clockwise
+	
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 1, 2))
+	{
+		maxValue = boardArray[xindex + 1][yindex + 2][0];
+		newX = xindex + 1;
+		newY = yindex + 2;
+		newIndex = 0;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 2, 1))
+	{
+		maxValue = boardArray[xindex + 2][yindex + 1][0];
+		newX = xindex + 2;
+		newY = yindex + 1;
+		newIndex = 1;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 2, -1))
+	{
+		maxValue = boardArray[xindex + 2][yindex - 1][0];
+		newX = xindex + 2;
+		newY = yindex - 1;
+		newIndex = 2;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 1, -2))
+	{
+		maxValue = boardArray[xindex + 1][yindex - 2][0];
+		newX = xindex + 1;
+		newY = yindex - 2;
+		newIndex = 3;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -1, -2))
+	{
+		maxValue = boardArray[xindex - 1][yindex - 2][0];
+		newX = xindex - 1;
+		newY = yindex - 2;
+		newIndex = 4;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -2, -1))
+	{
+		maxValue = boardArray[xindex - 2][yindex - 1][0];
+		newX = xindex - 2;
+		newY = yindex - 1;
+		newIndex = 5;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -2, 1))
+	{
+		maxValue = boardArray[xindex - 2][yindex + 1][0];
+		newX = xindex - 2;
+		newY = yindex + 1;
+		newIndex = 6;
+	}
+	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -1, 2))
+	{
+		maxValue = boardArray[xindex - 1][yindex + 2][0];
+		newX = xindex - 1;
+		newY = yindex + 2;
+		newIndex = 7;
+	}
 
-  return;
+	alreadyChecked[newIndex] = 1;
+	var tempArr = new Array()
+	tempArr[0] = newX;
+	tempArr[1] = newY;
+	console.log(tempArr[0]);
+	console.log(tempArr[1]);
+	return tempArr;
+}
+
+function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, xoffset, yoffset)
+{
+	if(xindex + xoffset > 0)
+		if (yindex + yoffset > 0)
+			if (maxValue <= boardArray[xindex + xoffset][yindex + yoffset][0])
+				if alreadyChecked[0] != 0 && !isVisited(xindex + xoffset, yindex + yoffset, visited))
+	{
+		return true;
+	}
+	return false;
 }
 
 // checks to see if the index was already visited. returns true if it has
 function isVisited(xindex, yindex, visited)
 {
+	for (var i = 0; i < visited.length(); ++i)
+	{
+		if (visited[xindex][yindex])
+		{	
+			return true;
+		}
+	}
   return false;
 }
 
 function isSink(xindex, yindex)
 {
+	if (xindex == 7 && yindex == 8)
+	{
+		return true;
+	}
   return false;
 }
 
 // this functions gets the average flow per edge used
-function calcFlow(boardArr)
+function findFlow(boardArr)
 {
-  return;
+  return 1;
 }
