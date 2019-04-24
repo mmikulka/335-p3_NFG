@@ -158,11 +158,11 @@ function DFS(boardArr, xindex, yindex, visited)
   }
   
   // this is going to be where we check for the highest next nodes
-  // if any of the nodes is the sink go directly to it
-  console.log(visited);
+  // if any of the nodes is the sink go directly to it/*
+  /*console.log(visited);
   console.log(xindex);
   console.log(yindex);
-  
+  */
   visited[xindex][yindex] = 1;
   edges += 1;
   var temp = flowCapacity; // temperary variable to hold the flow up to the current node
@@ -181,7 +181,13 @@ function DFS(boardArr, xindex, yindex, visited)
   			visited[xindex][yindex] = 0;
 			edges -= 1;
  	 	}
-  return found;
+	if (found)
+		{
+		    drawNode(context, xindex, yindex);
+		    connectNodes(context, xindex, yindex, nextMove[0], nextMove[1], board);
+			return true
+		}
+  return false;
 }
 
 function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
@@ -254,8 +260,10 @@ function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
 	var tempArr = new Array()
 	tempArr[0] = newX;
 	tempArr[1] = newY;
-	console.log(tempArr[0]);
-	console.log(tempArr[1]);
+
+	//console.log(tempArr[0]);
+	//console.log(tempArr[1]);
+	
 	return tempArr;
 }
 
@@ -263,9 +271,12 @@ function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue,
 {
 	if(xindex + xoffset > 0)
 		if (yindex + yoffset > 0)
+			if (xindex + xoffset < 10 && yindex + yoffset < 10)
 			if (maxValue <= boardArray[xindex + xoffset][yindex + yoffset][0])
-				if alreadyChecked[0] != 0 && !isVisited(xindex + xoffset, yindex + yoffset, visited))
+				if (alreadyChecked[0] == 0)
+					if (!isVisited(xindex + xoffset, yindex + yoffset, visited))
 	{
+		//console.log("good Move");
 		return true;
 	}
 	return false;
@@ -274,7 +285,7 @@ function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue,
 // checks to see if the index was already visited. returns true if it has
 function isVisited(xindex, yindex, visited)
 {
-	for (var i = 0; i < visited.length(); ++i)
+	for (var i = 0; i < visited.length; ++i)
 	{
 		if (visited[xindex][yindex])
 		{	
