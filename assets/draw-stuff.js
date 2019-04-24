@@ -1,10 +1,25 @@
 /*
 Authors: Jonathan Ishii, Matthew Mikulka
 Contact: jtishii@csu.fullerton.edu, mattmikulka@csu.fullerton.edu
-Description: This program illustrates Wolfram's Rule-90 is based on a 1D array where each cell is active.
-            We will illustate on a webpage visually how this works. This file holds all the functions to be called by the Cela Rule 90.html file
+Description: This program illustrates Knight Max Flow problem and solves it as best it can.
+              It also holds all the javascript that does all the computing to draw objects on the canvas.
 */
 // Draw filled rect.
+
+max_edges = Math.floor((Math.random() * 16)) + 15;
+
+var SOURCE =
+{
+  yindex: 1,
+  xindex: 2
+};
+
+var SINK =
+{
+  yindex: 8,
+  xindex: 7
+};
+
 function draw_rect( ctx, sSize, fill, x, y)
 {
     fill = fill || 'white';
@@ -25,7 +40,7 @@ function draw_board( rctx, sSize, rstroke, rfill1, rfill2, boardNumbers)
 {
     rctx.save( );
     rctx.strokeStyle = "black";
-	rctx.lineWidth = 1;
+	  rctx.lineWidth = 1;
 	for (var iy = 0; iy < 10; iy += 1)
 	{
       // draws y axis cell labels
@@ -70,8 +85,13 @@ function createBoardArray()
 		for (var j = 0; j < 10; ++j)
 		{
 			boardArray[i][j] = new Array();
-			boardArray[i][j][0] = Math.floor((Math.random() * 16)) * 2; // assigns a random even number between 0 and 30 to each cell
-			boardArray[i][j][1] = 0; // indicator to see if spot was accessed before.
+			boardArray[i][j][0] = Math.floor((Math.random() * 16)) * 2; // assigns a random even number between 0 and 30 to each cell for the capacity
+			boardArray[i][j][1] = 0; // current max flow through this nodes
+      boardArray[i][j][2] = 0; // the amount of edges to took to get there
+      boardArray[i][j][3] = 0; // the xindex of the last node that took to get there
+      boardArray[i][j][4] = 0; // the yindex of the last node that took to get there
+      // everything else after that will be current flow from previous iterations that have already been flown
+
 		}
 	}
 	//print array numbers to console
@@ -88,11 +108,11 @@ function createBoardArray()
 }
 
 // draws a nodes in the given index of the grid
-function drawNode(ctx, x, y)
+function drawNode(ctx, x, y, color)
 {
   ctx.save();
   ctx.beginPath();
-  ctx.fillStyle = "green";
+  ctx.fillStyle = color || "green";
   ctx.arc(y * 150 + 125, x * 150 + 125, 30, 0, 2 * Math.PI);
   ctx.stroke();
   ctx.fill();
@@ -119,10 +139,48 @@ function connectNodes(ctx, x1, y1, x2, y2, boardNumbers)
   ctx.restore();
 }
 
-function DFS(board_arr, path_ammount, current_y, current_x, sink_y, sink_x) {
-	if ( current_x == sink_x && current_y == sink_y) return 0;
-	var paths = new Array();
-	var tempX = current_x -1;
-	var tempY = current_y -2;
 
+// this function does a BFS on the graph to determine which path has the best flow per edge used
+function DFS(boardArr, xindex, yindex, visited)
+{
+  // checks to see if the next search is out of bounds
+  if(xindex < 0 || yindex < 0 || xindex > 9 || yindex > 9)
+  {
+    return 0;
+  }
+
+  // checks to see if the amount of edges is all used up
+  if(boardArr[xindex][yindex][2] == max_edges)
+  {
+    return 0;
+  }
+
+  if(isVisited(xindex, yindex, visited))
+  {
+    return 0;
+  }
+
+  // this is going to be where we check for the highest next nodes
+  // if any of the nodes is the sink go directly to it
+
+
+
+  return;
+}
+
+// checks to see if the index was already visited. returns true if it has
+function isVisited(xindex, yindex, visited)
+{
+  return false;
+}
+
+function isSink(xindex, yindex)
+{
+  return false;
+}
+
+// this functions gets the average flow per edge used
+function calcFlow(boardArr)
+{
+  return;
 }

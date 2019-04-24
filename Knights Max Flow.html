@@ -41,18 +41,19 @@ Description: This file holds the main body of the program. It calls all the func
   // =====================================================  Main ====
     var canvas = document.getElementById( "grid" );
     var context = canvas.getContext( "2d" );
-	var board = createBoardArray();
+	  var board = createBoardArray();
 
     draw_board( context, 150, 5, 'white', 'grey', board);
 
     // this can be moved when the algorithm finishes
     document.getElementById('currentFlow').innerHTML = "The current flow is: " + 1234;
-    document.getElementById('unusedEdges').innerHTML = "The number of unused edges is: " + 1234;
+    document.getElementById('unusedEdges').innerHTML = "The number of unused edges is: " + max_edges;
 
     // for testing
     // params: context, x index, y index
     drawNode(context, 0, 0);
-    drawNode(context, 1, 2);
+    drawNode(context, 1, 2, "yellow");
+    drawNode(context, 8, 7, "yellow");
 
     // params: context, x1 index, y1 index, x2 index, y2 index
     connectNodes(context, 0, 0, 1, 2, board);
@@ -81,6 +82,11 @@ Description: This file holds the main body of the program. It calls all the func
 
     drawNode(context, 6, 8);
     connectNodes(context, 5, 6, 6, 8, board);
+
+    console.log(board);
+
+    // starting the serch at the source
+    DFS(board, 1, 2);
 
   </script>
 </html>
