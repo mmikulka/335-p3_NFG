@@ -2,51 +2,51 @@
 Authors: Jonathan Ishii, Matthew Mikulka
 Contact: jtishii@csu.fullerton.edu, mattmikulka@csu.fullerton.edu
 Description: This program illustrates Knight Max Flow problem and solves it as best it can.
-              It also holds all the javascript that does all the computing to draw objects on the canvas.
+It also holds all the javascript that does all the computing to draw objects on the canvas.
 */
 // Draw filled rect.
 
-max_edges = Math.floor((Math.random() * 16)) + 15;
+max_edges = 15//Math.floor((Math.random() * 16)) + 15;
 
-var flowCapacity = 0;
+var flowCapacity = 40;
 
 edges = 0;
 
 function draw_rect( ctx, sSize, fill, x, y)
 {
-    fill = fill || 'white';
-    ctx.beginPath();
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = fill;
-    ctx.lineWidth = 3;
-    ctx.rect(x, y, sSize, sSize);
-	ctx.fill();
-    ctx.stroke();
-	ctx.closePath();
-    ctx.restore( );
+  fill = fill || 'white';
+  ctx.beginPath();
+  ctx.strokeStyle = 'black';
+  ctx.fillStyle = fill;
+  ctx.lineWidth = 3;
+  ctx.rect(x, y, sSize, sSize);
+  ctx.fill();
+  ctx.stroke();
+  ctx.closePath();
+  ctx.restore( );
 }
 
 // =====================================================  draw_grid ====
 // draw starting grid
 function draw_board( rctx, sSize, rstroke, rfill1, rfill2, boardNumbers)
 {
-    rctx.save( );
-    rctx.strokeStyle = "black";
-	  rctx.lineWidth = 1;
-	for (var iy = 0; iy < 10; iy += 1)
-	{
-      // draws y axis cell labels
-      rctx.save();
-      rctx.font = "40px Arial";
-      rctx.fillStyle = "black";
-      rctx.fillText(iy, 10, iy * sSize + 140);
-      rctx.restore();
-    	for ( var ix = 0; ix < 10; ix += 1)
-    	{
-			var fill;
-			if ((iy + ix) % 2 == 0) {fill = rfill1;}
-			else {fill = rfill2}
-			draw_rect (rctx, sSize, fill, ix * sSize + 50, iy * sSize + 50);
+  rctx.save( );
+  rctx.strokeStyle = "black";
+  rctx.lineWidth = 1;
+  for (var iy = 0; iy < 10; iy += 1)
+  {
+    // draws y axis cell labels
+    rctx.save();
+    rctx.font = "40px Arial";
+    rctx.fillStyle = "black";
+    rctx.fillText(iy, 10, iy * sSize + 140);
+    rctx.restore();
+    for ( var ix = 0; ix < 10; ix += 1)
+    {
+      var fill;
+      if ((iy + ix) % 2 == 0) {fill = rfill1;}
+      else {fill = rfill2}
+      draw_rect (rctx, sSize, fill, ix * sSize + 50, iy * sSize + 50);
 
       // draws the value of the cells on the board
       rctx.save();
@@ -60,8 +60,8 @@ function draw_board( rctx, sSize, rstroke, rfill1, rfill2, boardNumbers)
       rctx.fillStyle = "black";
       rctx.fillText(ix, ix * sSize + 120, 30);
       rctx.restore();
-   	 	}
-	}
+    }
+  }
 }
 
 /*
@@ -70,33 +70,36 @@ creats a 10x10 3d array with each cell a random even number between (0 and 30).
 
 function createBoardArray()
 {
-	var boardArray = new Array();
-	for (var i = 0; i < 10; ++i)
-	{
-		boardArray[i] = new Array();
-		for (var j = 0; j < 10; ++j)
-		{
-			boardArray[i][j] = new Array();
-			boardArray[i][j][0] = Math.floor((Math.random() * 16)) * 2; // assigns a random even number between 0 and 30 to each cell for the capacity
-			boardArray[i][j][1] = 0; // current max flow through this nodes
+  var boardArray = new Array();
+  for (var i = 0; i < 10; ++i)
+  {
+    boardArray[i] = new Array();
+    for (var j = 0; j < 10; ++j)
+    {
+      boardArray[i][j] = new Array();
+      boardArray[i][j][0] = 0
+      boardArray[i][j][0] = Math.floor((Math.random() * 16)) * 2; // assigns a random even number between 0 and 30 to each cell for the capacity
+      boardArray[i][j][1] = 0; // current max flow through this nodes
       boardArray[i][j][2] = 0; // the amount of edges to took to get there
       boardArray[i][j][3] = 0; // the xindex of the last node that took to get there
       boardArray[i][j][4] = 0; // the yindex of the last node that took to get there
       // everything else after that will be current flow from previous iterations that have already been flown
 
-		}
-	}
-	//print array numbers to console
-	/*
-	for (var i = 0; i < 10; ++i)
-	{
-		for (var j = 0; j < 10; ++j)
-		{
-			console.log(boardArray[i][j]);
-		}
-	}
-	*/
-	return boardArray;
+    }
+  }
+  //boardArray[2][4][0] = 1;
+  //boardArray[8][7][0] = 1
+  //print array numbers to console
+  /*
+  for (var i = 0; i < 10; ++i)
+  {
+  for (var j = 0; j < 10; ++j)
+  {
+  console.log(boardArray[i][j]);
+}
+}
+*/
+return boardArray;
 }
 
 // draws a nodes in the given index of the grid
@@ -127,7 +130,7 @@ function connectNodes(ctx, x1, y1, x2, y2, boardNumbers)
   xcord = ((x1 + x2) / 2) * 150 + 125;
   ycord = ((y1 + y2) / 2) * 150 + 125;
   ctx.fillText(flowCap, ycord, xcord);
-
+  ctx.closePath();
   ctx.restore();
 }
 
@@ -144,163 +147,267 @@ function DFS(boardArr, xindex, yindex, visited)
   // checks to see if the amount of edges is all used up
   if(edges == max_edges)
   {
+    edges--;
     return false;
   }
 
-  /*if(isVisited(xindex, yindex, visited))
+  if(isVisited(xindex, yindex, visited))
   {
-    return 0;
-  }*/
-  
-  if (isSink(xindex, yindex)) 
-  {
-	  return true;
+    return false;
   }
-  
+
+  if (isSink(xindex, yindex))
+  {
+    return true;
+  }
+  var initx = xindex;
+  var inity = yindex;
   // this is going to be where we check for the highest next nodes
-  // if any of the nodes is the sink go directly to it/*
+  // if any of the nodes is the sink go directly to it
   /*console.log(visited);
   console.log(xindex);
-  console.log(yindex);
-  */
+  console.log(yindex);*/
+
   visited[xindex][yindex] = 1;
-  edges += 1;
+  edges = edges + 1;
   var temp = flowCapacity; // temperary variable to hold the flow up to the current node
   alreadyChecked = new Array(8).fill(0);
+  var found;
   do{
-	  flowCapacity = temp;
-	  nextMove = findNextEdge(boardArr, xindex, yindex, visited, alreadyChecked);
-	  alreadyChecked.push(nextMove);
-	  currentFlow = findFlow();
-	  flowCapacity = Math.min(currentFlow, flowCapacity);
-	  found = DFS (boardArr, nextMove[0], nextMove[1], visited)
+    flowCapacity = temp;
+    var nextMove = findNextEdge(boardArr, xindex, yindex, visited, alreadyChecked);
+    currentFlow = findFlow();
+    flowCapacity = Math.min(currentFlow, flowCapacity);
+    // console.log(nextMove[0]);
+    //console.log(nextMove[1]);
+    movex = nextMove[0];
+    movey = nextMove[1];
+    found = DFS (boardArr, nextMove[0], nextMove[1], visited)
+    if (!found)
+    {
+      visited[xindex][yindex] = 0;
+    }
   }
   while (!found && Math.min(...alreadyChecked) == 0)
-	  if (!found)
-  		{
-  			visited[xindex][yindex] = 0;
-			edges -= 1;
- 	 	}
-	if (found)
-		{
-		    drawNode(context, xindex, yindex);
-		    connectNodes(context, xindex, yindex, nextMove[0], nextMove[1], board);
-			return true
-		}
+  if (!found)
+  {
+    //  edges--;
+    //visited[xindex][yindex] = 0;
+  }
+  if (found)
+  {
+    //	console.log(movex);
+    //	console.log(movey);
+    drawNode(context, xindex, yindex);
+    connectNodes(context, initx, inity, movex, movey, board);
+    return true
+  }
   return false;
 }
 
 function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
 {
-	var maxValue = 0;
-	var newX;
-	var newY;
-	var newIndex;
+  var maxValue = 0;
+  var newX = xindex;
+  var newY = xindex;
+  var newIndex;
 
-	//moves are done clockwise from 12 o'clock clockwise
-	
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 1, 2))
-	{
-		maxValue = boardArray[xindex + 1][yindex + 2][0];
-		newX = xindex + 1;
-		newY = yindex + 2;
-		newIndex = 0;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 2, 1))
-	{
-		maxValue = boardArray[xindex + 2][yindex + 1][0];
-		newX = xindex + 2;
-		newY = yindex + 1;
-		newIndex = 1;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 2, -1))
-	{
-		maxValue = boardArray[xindex + 2][yindex - 1][0];
-		newX = xindex + 2;
-		newY = yindex - 1;
-		newIndex = 2;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 1, -2))
-	{
-		maxValue = boardArray[xindex + 1][yindex - 2][0];
-		newX = xindex + 1;
-		newY = yindex - 2;
-		newIndex = 3;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -1, -2))
-	{
-		maxValue = boardArray[xindex - 1][yindex - 2][0];
-		newX = xindex - 1;
-		newY = yindex - 2;
-		newIndex = 4;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -2, -1))
-	{
-		maxValue = boardArray[xindex - 2][yindex - 1][0];
-		newX = xindex - 2;
-		newY = yindex - 1;
-		newIndex = 5;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -2, 1))
-	{
-		maxValue = boardArray[xindex - 2][yindex + 1][0];
-		newX = xindex - 2;
-		newY = yindex + 1;
-		newIndex = 6;
-	}
-	if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -1, 2))
-	{
-		maxValue = boardArray[xindex - 1][yindex + 2][0];
-		newX = xindex - 1;
-		newY = yindex + 2;
-		newIndex = 7;
-	}
+  //moves are done clockwise from 12 o'clock clockwise
 
-	alreadyChecked[newIndex] = 1;
-	var tempArr = new Array()
-	tempArr[0] = newX;
-	tempArr[1] = newY;
 
-	//console.log(tempArr[0]);
-	//console.log(tempArr[1]);
-	
-	return tempArr;
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 1, 2, 0))
+  {
+    maxValue = boardArray[xindex + 1][yindex + 2][0];
+    newX = xindex + 1;
+    newY = yindex + 2;
+    newIndex = 0;
+  }
+  else {
+    if (xindex + 1 < 0 || yindex + 2 < 0 || xindex + 1 > 9 || yindex + 2 > 9)
+    {
+      alreadyChecked[0] = 1;
+    }
+    else if (isVisited(xindex + 1, yindex + 2, visited))
+    {
+      alreadyChecked[0] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 2, 1, 1))
+  {
+    maxValue = boardArray[xindex + 2][yindex + 1][0];
+    newX = xindex + 2;
+    newY = yindex + 1;
+    newIndex = 1;
+  }
+  else {
+    if (xindex + 2 < 0 || yindex + 1 < 0 || xindex + 2 > 9 || yindex + 1 > 9)
+    {
+      alreadyChecked[1] = 1;
+    }
+    else if (isVisited(xindex + 2, yindex + 1, visited))
+    {
+      alreadyChecked[1] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 2, -1, 2))
+  {
+    maxValue = boardArray[xindex + 2][yindex - 1][0];
+    newX = xindex + 2;
+    newY = yindex - 1;
+    newIndex = 2;
+  }
+  else {
+    if (xindex + 2 < 0 || yindex - 1 < 0 || xindex + 2 > 9 || yindex - 1 > 9)
+    {
+      alreadyChecked[2] = 1;
+    }
+    else if (isVisited(xindex + 2, yindex - 1, visited))
+    {
+      alreadyChecked[2] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, 1, -2, 3))
+  {
+    maxValue = boardArray[xindex + 1][yindex - 2][0];
+    newX = xindex + 1;
+    newY = yindex - 2;
+    newIndex = 3;
+  }
+  else {
+    if (xindex + 1 < 0 || yindex - 2 < 0 || xindex + 1 > 9 || yindex - 2 > 9)
+    {
+      alreadyChecked[3] = 1;
+    }
+    else if (isVisited(xindex + 1, yindex - 2, visited))
+    {
+      alreadyChecked[3] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -1, -2, 4))
+  {
+    maxValue = boardArray[xindex - 1][yindex - 2][0];
+    newX = xindex - 1;
+    newY = yindex - 2;
+    newIndex = 4;
+  }
+  else {
+    if (xindex - 1 < 0 || yindex - 2 < 0 || xindex - 1 > 9 || yindex - 2 > 9)
+    {
+      alreadyChecked[4] = 1;
+    }
+    else if (isVisited(xindex - 1, yindex - 2, visited))
+    {
+      alreadyChecked[4] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -2, -1, 5))
+  {
+    maxValue = boardArray[xindex - 2][yindex - 1][0];
+    newX = xindex - 2;
+    newY = yindex - 1;
+    newIndex = 5;
+  }
+  else {
+    if (xindex - 2 < 0 || yindex - 1 < 0 || xindex - 2 > 9 || yindex - 1 > 9)
+    {
+      alreadyChecked[5] = 1;
+    }
+    else if (isVisited(xindex - 2, yindex - 1, visited))
+    {
+      alreadyChecked[5] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -2, 1, 6))
+  {
+    maxValue = boardArray[xindex - 2][yindex + 1][0];
+    newX = xindex - 2;
+    newY = yindex + 1;
+    newIndex = 6;
+  }
+  else {
+    if (xindex - 2 < 0 || yindex + 1 < 0 || xindex - 2 > 9 || yindex + 1 > 9)
+    {
+      alreadyChecked[6] = 1;
+    }
+    else if (isVisited(xindex - 2, yindex + 1, visited))
+    {
+      alreadyChecked[6] = 1;
+    }
+  }
+
+  if(goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, -1, 2, 7))
+  {
+    maxValue = boardArray[xindex - 1][yindex + 2][0];
+    newX = xindex - 1;
+    newY = yindex + 2;
+    newIndex = 7;
+  }
+  else {
+    if (xindex - 1 < 0 || yindex + 2 < 0 || xindex - 1 > 9 || yindex + 2 > 9)
+    {
+      alreadyChecked[7] = 1;
+    }
+    else if (isVisited(xindex - 1, yindex + 2, visited))
+    {
+      alreadyChecked[7] = 1;
+    }
+  }
+
+  alreadyChecked[newIndex] = 1;
+  var tempArr = new Array()
+  tempArr[0] = newX;
+  tempArr[1] = newY;
+
+  //console.log(tempArr[0]);
+  //console.log(tempArr[1]);
+
+  return tempArr;
 }
 
-function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, xoffset, yoffset)
+function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, xoffset, yoffset, index)
 {
-	if(xindex + xoffset > 0)
-		if (yindex + yoffset > 0)
-			if (xindex + xoffset < 10 && yindex + yoffset < 10)
-			if (maxValue <= boardArray[xindex + xoffset][yindex + yoffset][0])
-				if (alreadyChecked[0] == 0)
-					if (!isVisited(xindex + xoffset, yindex + yoffset, visited))
-	{
-		//console.log("good Move");
-		return true;
-	}
-	return false;
+
+  if (xindex + xoffset > 0 && yindex + yoffset > 0 && xindex + xoffset < 10 && yindex + yoffset < 10)
+  {
+    if (maxValue <= boardArray[xindex + xoffset][yindex + yoffset][0])
+    {
+      if (alreadyChecked[index] == 0)
+      {
+        if (!isVisited(xindex + xoffset, yindex + yoffset, visited))
+        {
+          //console.log("good Move");
+          return true;
+        }
+      }
+    }
+  }
+  else
+
+  return false;
 }
 
 // checks to see if the index was already visited. returns true if it has
 function isVisited(xindex, yindex, visited)
 {
-	for (var i = 0; i < visited.length; ++i)
-	{
-		if (visited[xindex][yindex])
-		{	
-			return true;
-		}
-	}
+  if (visited[xindex][yindex])
+    {
+      return true;
+    }
   return false;
 }
 
 function isSink(xindex, yindex)
 {
-	if (xindex == 7 && yindex == 8)
-	{
-		return true;
-	}
+  if (xindex == 8 && yindex == 7)
+  {
+    return true;
+  }
   return false;
 }
 
