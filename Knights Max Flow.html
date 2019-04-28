@@ -8,7 +8,7 @@ Description: This file holds the main body of the program. It calls all the func
 <html>
   <head>
     <!-- Title on the top of the brower tab -->
-    <title>Knights Max Flow</title>
+    <title>NFG - Knights Max Flow</title>
 
     <script src="assets/draw-stuff.js"></script>
     <link rel="stylesheet" href="assets/styles.css">
@@ -20,6 +20,7 @@ Description: This file holds the main body of the program. It calls all the func
     <div id="navbar">
       <div id="currentFlow"></div>
       <div id="unusedEdges"></div>
+      <div id="usedEdges"></div>
     <div>
 
     <canvas id="grid" width="1550" height="1550"></canvas>
@@ -55,7 +56,8 @@ Description: This file holds the main body of the program. It calls all the func
 
     // this can be moved when the algorithm finishes
     document.getElementById('currentFlow').innerHTML = "The current flow is: " + flowCapacity;
-    document.getElementById('unusedEdges').innerHTML = "The number of used edges is: " + edges;
+    document.getElementById('unusedEdges').innerHTML = "The number of unused edges is: " + (max_edges - edges);
+    document.getElementById('usedEdges').innerHTML = "The number of used edges is: " + edges;
 /*
     // for testing
     // params: context, x index, y index

@@ -6,12 +6,12 @@ It also holds all the javascript that does all the computing to draw objects on 
 */
 // Draw filled rect.
 
-max_edges = 15//Math.floor((Math.random() * 16)) + 15;
+ //set maximum number of edgest to a random number between 15 and 30
+max_edges = Math.floor((Math.random() * 16)) + 15;
 
-var flowCapacity = 40;
-removedEdge = false;
+var flowCapacity = 40; //set flow capaicty to a number higher than what the flow can be
 
-edges = -1;
+edges = -1; //set edges to -1 to make up for when the source is added to the path.
 
 function draw_rect( ctx, sSize, fill, x, y)
 {
@@ -87,7 +87,7 @@ function createBoardArray()
       // everything else after that will be current flow from previous iterations that have already been flown
 
     }
-  }/*
+  }/*//Hard code values to check paths are being made correctly.
   boardArray[1][2][0] = 14;
   boardArray[2][4][0] = 14;
   boardArray[4][5][0] = 14;
@@ -166,7 +166,6 @@ function DFS(boardArr, xindex, yindex, visited)
   // checks to see if the amount of edges is all used up
   if (edges >= max_edges)
   {
-    //edges--;
     return false;
   }
 
@@ -180,18 +179,19 @@ function DFS(boardArr, xindex, yindex, visited)
 
   visited[xindex][yindex] = 1;
   var temp = flowCapacity; // temperary variable to hold the flow up to the current node
-  var alreadyChecked = new Array(9).fill(0);
-  alreadyChecked[8] = 1;
-  var found = false;
+  var alreadyChecked = new Array(9).fill(0); //variable to keep track of moves we have already checked.
+  alreadyChecked[8] = 1; //we set the array to one over the move just incase there are no moves to make
+  var found = false; // keep track of wether we have found the sink with DFS search
   do{
-    flowCapacity = temp;
-    var nextMove = findNextEdge(boardArr, xindex, yindex, visited, alreadyChecked);
-    var currentFlow = findFlow(boardArr, xindex, yindex, nextMove);
-    flowCapacity = Math.min(currentFlow, flowCapacity);
+    flowCapacity = temp; //set flow capacity to what it was at this location if DFS does not return that it found sink
+    var nextMove = findNextEdge(boardArr, xindex, yindex, visited, alreadyChecked); // find the next best move
+    var currentFlow = findFlow(boardArr, xindex, yindex, nextMove); //find the current flow for the next best move
+    flowCapacity = Math.min(currentFlow, flowCapacity); //set the flowCapacity to the smallest value of path.
+    //temp values that save the current next best move for this node.
     var movex = nextMove[0];
     var movey = nextMove[1];
-    found = DFS (boardArr, nextMove[0], nextMove[1], visited)
-	if(!found)
+    found = DFS (boardArr, nextMove[0], nextMove[1], visited) //recursive call.
+	if(!found) // check to see if we found the sink if not erase the next best move node and remove 1 from edge count.
 	{
     visited[movex][movey] = 0;
 		flowCapacity = temp;
@@ -200,11 +200,7 @@ function DFS(boardArr, xindex, yindex, visited)
 
   }
   while (!found && Math.min(...alreadyChecked) == 0)
-  if (edges == max_edges)
-  {
-    //edges--;
-  }
-  if (found)
+  if (found) // if found start drawing the path and nodes we visit.
   {
     drawNode(context, xindex, yindex);
     connectNodes(context, initx, inity, movex, movey, board);
@@ -213,7 +209,7 @@ function DFS(boardArr, xindex, yindex, visited)
   return false;
 }
 
-function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
+function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked) //find the next best edge
 {
   var maxValue = 0;
   var newX = xindex;
@@ -230,7 +226,7 @@ function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
     newY = yindex + 2;
     newIndex = 0;
   }
-  else { // need to mark that we shouldn't check this move if the move goes outside the board or has been visited already.
+  else { // need to mark that the move is invalid if the move goes outside the board or has been visited already.
     if (xindex + 1 < 0 || yindex + 2 < 0 || xindex + 1 > 9 || yindex + 2 > 9)
     {
       alreadyChecked[0] = 1;
@@ -378,6 +374,9 @@ function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
   return tempArr;
 }
 
+/*
+check to see if the current proposed move is a valid move.
+*/
 function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, xoffset, yoffset, index)
 {
 
@@ -410,6 +409,7 @@ function isVisited(xindex, yindex, visited)
   return false;
 }
 
+//check to see if current node is the sink.
 function isSink(xindex, yindex)
 {
   if (xindex == 8 && yindex == 7)
