@@ -9,8 +9,9 @@ It also holds all the javascript that does all the computing to draw objects on 
 max_edges = 15//Math.floor((Math.random() * 16)) + 15;
 
 var flowCapacity = 40;
+removedEdge = false;
 
-edges = 0;
+edges = -1;
 
 function draw_rect( ctx, sSize, fill, x, y)
 {
@@ -86,9 +87,21 @@ function createBoardArray()
       // everything else after that will be current flow from previous iterations that have already been flown
 
     }
-  }
-  //boardArray[2][4][0] = 1;
-  //boardArray[8][7][0] = 1
+  }/*
+  boardArray[1][2][0] = 14;
+  boardArray[2][4][0] = 14;
+  boardArray[4][5][0] = 14;
+  boardArray[6][6][0] = 14;
+  boardArray[8][7][0] = 14;
+  boardArray[3][6][0] = 16;
+  boardArray[4][8][0] = 14;
+  boardArray[6][7][0] = 14;
+  boardArray[7][9][0] = 14;
+    boardArray[0][4][0] = 16;
+    boardArray[2][8][0] = 18;
+    boardArray[0][9][0] = 14;*/
+  //  boardArray[0][0][0] = 4;
+
   //print array numbers to console
   /*
   for (var i = 0; i < 10; ++i)
@@ -126,7 +139,7 @@ function connectNodes(ctx, x1, y1, x2, y2, boardNumbers)
   // draws the value of the cap based on the cells on the board
   ctx.font = "20px Arial";
   ctx.fillStyle = "red";
-  flowCap = "(" + 0 + ", " + (boardNumbers[x1][y1][0] + boardNumbers[x2][y2][0])/2 + ")";
+  flowCap = "(" + flowCapacity + ", " + (boardNumbers[x1][y1][0] + boardNumbers[x2][y2][0])/2 + ")";
   xcord = ((x1 + x2) / 2) * 150 + 125;
   ycord = ((y1 + y2) / 2) * 150 + 125;
   ctx.fillText(flowCap, ycord, xcord);
@@ -138,66 +151,61 @@ function connectNodes(ctx, x1, y1, x2, y2, boardNumbers)
 // this function does a BFS on the graph to determine which path has the best flow per edge used
 function DFS(boardArr, xindex, yindex, visited)
 {
+
+    ++edges;
+    if (isSink(xindex, yindex))
+    {
+      return true;
+    }
   // checks to see if the next search is out of bounds
-  if(xindex < 0 || yindex < 0 || xindex > 9 || yindex > 9)
+  if (xindex < 0 || yindex < 0 || xindex > 9 || yindex > 9)
   {
     return false;
   }
 
   // checks to see if the amount of edges is all used up
-  if(edges == max_edges)
+  if (edges >= max_edges)
   {
-    edges--;
+    //edges--;
     return false;
   }
 
-  if(isVisited(xindex, yindex, visited))
+  if (isVisited(xindex, yindex, visited))
   {
     return false;
   }
 
-  if (isSink(xindex, yindex))
-  {
-    return true;
-  }
   var initx = xindex;
   var inity = yindex;
-  // this is going to be where we check for the highest next nodes
-  // if any of the nodes is the sink go directly to it
-  /*console.log(visited);
-  console.log(xindex);
-  console.log(yindex);*/
 
   visited[xindex][yindex] = 1;
-  edges = edges + 1;
   var temp = flowCapacity; // temperary variable to hold the flow up to the current node
-  alreadyChecked = new Array(8).fill(0);
-  var found;
+  var alreadyChecked = new Array(9).fill(0);
+  alreadyChecked[8] = 1;
+  var found = false;
   do{
     flowCapacity = temp;
     var nextMove = findNextEdge(boardArr, xindex, yindex, visited, alreadyChecked);
-    currentFlow = findFlow();
+    var currentFlow = findFlow(boardArr, xindex, yindex, nextMove);
     flowCapacity = Math.min(currentFlow, flowCapacity);
-    // console.log(nextMove[0]);
-    //console.log(nextMove[1]);
-    movex = nextMove[0];
-    movey = nextMove[1];
+    var movex = nextMove[0];
+    var movey = nextMove[1];
     found = DFS (boardArr, nextMove[0], nextMove[1], visited)
-    if (!found)
-    {
-      visited[xindex][yindex] = 0;
-    }
+	if(!found)
+	{
+    visited[movex][movey] = 0;
+		flowCapacity = temp;
+        edges--;
+	}
+
   }
   while (!found && Math.min(...alreadyChecked) == 0)
-  if (!found)
+  if (edges == max_edges)
   {
-    //  edges--;
-    //visited[xindex][yindex] = 0;
+    //edges--;
   }
   if (found)
   {
-    //	console.log(movex);
-    //	console.log(movey);
     drawNode(context, xindex, yindex);
     connectNodes(context, initx, inity, movex, movey, board);
     return true
@@ -209,8 +217,8 @@ function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
 {
   var maxValue = 0;
   var newX = xindex;
-  var newY = xindex;
-  var newIndex;
+  var newY = yindex;
+  var newIndex = 8;
 
   //moves are done clockwise from 12 o'clock clockwise
 
@@ -222,7 +230,7 @@ function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
     newY = yindex + 2;
     newIndex = 0;
   }
-  else {
+  else { // need to mark that we shouldn't check this move if the move goes outside the board or has been visited already.
     if (xindex + 1 < 0 || yindex + 2 < 0 || xindex + 1 > 9 || yindex + 2 > 9)
     {
       alreadyChecked[0] = 1;
@@ -373,7 +381,7 @@ function findNextEdge(boardArray, xindex, yindex, visited, alreadyChecked)
 function goodMove(boardArray, xindex, yindex, visited, alreadyChecked, maxValue, xoffset, yoffset, index)
 {
 
-  if (xindex + xoffset > 0 && yindex + yoffset > 0 && xindex + xoffset < 10 && yindex + yoffset < 10)
+  if (xindex + xoffset >= 0 && yindex + yoffset >= 0 && xindex + xoffset < 10 && yindex + yoffset < 10)
   {
     if (maxValue <= boardArray[xindex + xoffset][yindex + yoffset][0])
     {
@@ -412,7 +420,9 @@ function isSink(xindex, yindex)
 }
 
 // this functions gets the average flow per edge used
-function findFlow(boardArr)
+function findFlow(boardArr, xindex, yindex, nextMove)
 {
-  return 1;
+  var currentFlow = boardArr[xindex][yindex][0];
+  var nextMoveFlow = boardArr[nextMove[0]][nextMove[1]][0];
+  return (currentFlow + nextMoveFlow)/ 2;
 }
